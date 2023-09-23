@@ -7,6 +7,8 @@ type HandlerSet struct {
 	// Proxy invokes a function
 	Proxy http.HandlerFunc
 
+	// proxy for essemble
+	EProxy http.HandlerFunc
 	// DeployFunction deploys a new function that isn't already deployed
 	DeployFunction http.HandlerFunc
 

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"log"
 
 	"github.com/gorilla/mux"
 	ftypes "github.com/openfaas/faas-provider/types"
@@ -21,6 +22,10 @@ import (
 // MakeQueuedProxy accepts work onto a queue
 func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer, pathTransformer middleware.URLPathTransformer, defaultNS string, functionQuery scaling.FunctionQuery) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		log.Println("KQ: This is queuedProxy " )
+		log.Println("Async enabled: Using NATS Streaming")
+
 		if r.Body != nil {
 			defer r.Body.Close()
 		}
@@ -52,11 +57,14 @@ func MakeQueuedProxy(metrics metrics.MetricOptions, queuer ftypes.RequestQueuer,
 			CallbackURL: callbackURL,
 		}
 
+		// PUT THE REQUEST TO queue
 		if err = queuer.Queue(req); err != nil {
 			fmt.Printf("Queue error: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			return                       
 		}
+		log.Println(" PUT THE REQUEST TO queue")
+
 
 		w.WriteHeader(http.StatusAccepted)
 	}

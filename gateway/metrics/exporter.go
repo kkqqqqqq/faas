@@ -42,13 +42,17 @@ func NewExporter(options MetricOptions, credentials *auth.BasicAuthCredentials, 
 // Describe is to describe the metrics for Prometheus
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 
-	e.metricOptions.GatewayFunctionInvocation.Describe(ch)
+	e.metricOptions.GatewayFunctionInvocation.Describe(ch) // replica invocations times
 	e.metricOptions.GatewayFunctionsHistogram.Describe(ch)
-	e.metricOptions.ServiceReplicasGauge.Describe(ch)
+	e.metricOptions.ServiceReplicasGauge.Describe(ch) //replica numbers of each func
 	e.metricOptions.GatewayFunctionInvocationStarted.Describe(ch)
 
 	e.metricOptions.ServiceMetrics.Counter.Describe(ch)
 	e.metricOptions.ServiceMetrics.Histogram.Describe(ch)
+
+	//cold start
+	e.metricOptions.GatewayFunctionColdStartMetrics.Counter.Describe(ch)
+	e.metricOptions.GatewayFunctionColdStartMetrics.Histogram.Describe(ch)
 }
 
 // Collect collects data to be consumed by prometheus
@@ -72,12 +76,19 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		e.metricOptions.ServiceReplicasGauge.
 			WithLabelValues(serviceName).
 			Set(float64(service.Replicas))
+
+		// about scale to 0
+		e.metricOptions.GatewayFunctionInvocation.GetMetricWithLabelValues(serviceName, "200")
 	}
 
 	e.metricOptions.ServiceReplicasGauge.Collect(ch)
 
 	e.metricOptions.ServiceMetrics.Counter.Collect(ch)
 	e.metricOptions.ServiceMetrics.Histogram.Collect(ch)
+
+	//clod start 
+	e.metricOptions.GatewayFunctionColdStartMetrics.Counter.Collect(ch)
+	e.metricOptions.GatewayFunctionColdStartMetrics.Histogram.Collect(ch)
 }
 
 // StartServiceWatcher starts a ticker and collects service replica counts to expose to prometheus

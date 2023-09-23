@@ -20,6 +20,9 @@ type MetricOptions struct {
 	ServiceReplicasGauge *prometheus.GaugeVec
 
 	ServiceMetrics *ServiceMetricOptions
+
+	//cold start
+	GatewayFunctionColdStartMetrics *ServiceMetricOptions
 }
 
 // ServiceMetricOptions provides RED metrics
@@ -97,6 +100,28 @@ func BuildMetricsOptions() MetricOptions {
 		[]string{"function_name"},
 	)
 
+	//cold start 
+	gatewayFunctionColdStartMetricOptions := &ServiceMetricOptions{
+		Counter: prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+				Namespace: "gateway",
+				Subsystem: "function",
+				Name:      "cold_start_total",
+				Help:      "The total number of function cold start.",
+			},
+			[]string{"function_name"},
+		),
+		Histogram: prometheus.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: "gateway",
+			Subsystem: "function",
+			Name:      "cold_start_duration_seconds",
+			Help:      "Seconds spent function cold start.",
+			Buckets:   []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+		}, []string{"function_name"}),
+	}
+
+
+
 	serviceMetricOptions := &ServiceMetricOptions{
 		Counter:   counter,
 		Histogram: histogram,
@@ -108,6 +133,9 @@ func BuildMetricsOptions() MetricOptions {
 		ServiceReplicasGauge:             serviceReplicas,
 		ServiceMetrics:                   serviceMetricOptions,
 		GatewayFunctionInvocationStarted: gatewayFunctionInvocationStarted,
+
+		//cold start 
+		GatewayFunctionColdStartMetrics:  gatewayFunctionColdStartMetricOptions,
 	}
 
 	return metricsOptions

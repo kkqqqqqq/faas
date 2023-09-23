@@ -79,6 +79,7 @@ func (q *NATSQueue) connect() error {
 	q.nc = nc
 	q.ncMutex.Unlock()
 
+	log.Printf("Connect ok!" )
 	return nil
 }
 

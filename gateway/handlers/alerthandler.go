@@ -78,10 +78,17 @@ func scaleService(alert requests.PrometheusInnerAlert, service scaling.ServiceQu
 	serviceName, namespace := middleware.GetNamespace(defaultNamespace, alert.Labels.FunctionName)
 
 	if len(serviceName) > 0 {
+		//get now replica numbers
 		queryResponse, getErr := service.GetReplicas(serviceName, namespace)
 		if getErr == nil {
 			status := alert.Status
+	
+			//scale to 0 
+			if alert.Labels.AlertName == "APINoInvocation" {
+				status = "resolved"
+			}
 
+			//calcute new replica numbers
 			newReplicas := CalculateReplicas(status, queryResponse.Replicas, uint64(queryResponse.MaxReplicas), queryResponse.MinReplicas, queryResponse.ScalingFactor)
 
 			log.Printf("[Scale] function=%s %d => %d.\n", serviceName, queryResponse.Replicas, newReplicas)

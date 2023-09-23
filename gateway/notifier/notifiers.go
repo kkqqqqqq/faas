@@ -1,4 +1,4 @@
-package handlers
+package notifier
 
 import (
 	"fmt"
@@ -71,7 +71,12 @@ func (p PrometheusFunctionNotifier) Notify(method string, URL string, originalUR
 			Inc()
 	} else if event == "started" {
 		p.Metrics.GatewayFunctionInvocationStarted.WithLabelValues(serviceName).Inc()
+	} else if event == "coldStart" {
+		// cold start 
+		p.Metrics.GatewayFunctionColdStartMetrics.Counter.WithLabelValues(serviceName).Inc()
+		p.Metrics.GatewayFunctionColdStartMetrics.Histogram.WithLabelValues(serviceName).Observe(duration.Seconds())
 	}
+
 
 }
 
