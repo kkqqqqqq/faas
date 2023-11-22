@@ -2,23 +2,22 @@ package scaling
 
 import (
 	"fmt"
-	"log"
-	"time"
 	"github.com/openfaas/faas/gateway/notifier"
 	"github.com/openfaas/faas/gateway/types"
 	"golang.org/x/sync/singleflight"
+	"log"
+	"time"
 )
 
 // NewFunctionScaler create a new scaler with the specified
 // ScalingConfig
-func NewFunctionScaler(config ScalingConfig, functionCacher FunctionCacher,notifiers []notifier.HTTPNotifier) FunctionScaler {
+func NewFunctionScaler(config ScalingConfig, functionCacher FunctionCacher, notifiers []notifier.HTTPNotifier) FunctionScaler {
 	return FunctionScaler{
 		Cache:        functionCacher,
 		Config:       config,
 		SingleFlight: &singleflight.Group{},
 		//cold start
-		notifiers:    notifiers,
-
+		notifiers: notifiers,
 	}
 }
 
@@ -29,7 +28,7 @@ type FunctionScaler struct {
 	SingleFlight *singleflight.Group
 
 	//cold start
-	notifiers    []notifier.HTTPNotifier
+	notifiers []notifier.HTTPNotifier
 }
 
 // FunctionScaleResult holds the result of scaling from zero
@@ -159,8 +158,6 @@ func (f *FunctionScaler) Scale(functionName, namespace string) FunctionScaleResu
 	// Holding pattern for at least one function replica to be available
 	for i := 0; i < int(f.Config.MaxPollCount); i++ {
 
-		
-
 		res, err, _ := f.SingleFlight.Do(getKey, func() (interface{}, error) {
 			return f.Config.ServiceQuery.GetReplicas(functionName, namespace)
 		})
@@ -184,8 +181,8 @@ func (f *FunctionScaler) Scale(functionName, namespace string) FunctionScaleResu
 		if queryResponse.AvailableReplicas > 0 {
 
 			log.Printf("[Ready] function=%s waited for - %.4fs", functionName, totalTime.Seconds())
-			
-			 // 添加coldStart类型的通知
+
+			// 添加coldStart类型的通知
 			for _, notifier := range f.notifiers {
 				notifier.Notify("GET", "", "/function/"+functionName, 200, "coldStart", totalTime)
 			}

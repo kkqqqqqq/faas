@@ -1,0 +1,8 @@
+k8s.io/api v0.25.14 h1:HoIR3IorzJkd0LPfCVq1Q3lRwij3+lZWJRmyp7YcL7o=
+k8s.io/api v0.25.14/go.mod h1:goGtHI224Qh0tcHk8gOYPhTyCZNwQFwUMHsdabnSnSs=
+k8s.io/apimachinery v0.25.14 h1:SI5uE46G9GAvEHPGDcbiIaKTGHOX2anWKfBtI7/4ScQ=
+k8s.io/apimachinery v0.25.14/go.mod h1:IFwbcNi3gKkfDhuy0VYu3+BwbxbiIov3p6FR8ge1Epc=
+k8s.io/metrics v0.25.14 h1:nansEBag8USpVpfJiFL9u/q+55nROaG87aWoeMKnodk=
+k8s.io/metrics v0.25.14/go.mod h1:m3MVyIcMrbaCf7GPiIXVxwjSwnyqxHgpNlzC7ATdaX8=
+k8s.io/metrics v0.28.2 h1:Z/oMk5SmiT/Ji1SaWOPfW2l9W831BLO9/XxDq9iS3ak=
+k8s.io/metrics v0.28.2/go.mod h1:QTIIdjMrq+KodO+rmp6R9Pr1LZO8kTArNtkWoQXw0sw=

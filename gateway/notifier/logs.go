@@ -3,6 +3,7 @@ package notifier
 import (
 	"context"
 	"fmt"
+	"github.com/openfaas/faas/gateway/requests"
 	"io"
 	"log"
 	"net/http"
@@ -32,7 +33,7 @@ func NewLogHandlerFunc(logProvider url.URL, timeout time.Duration) http.HandlerF
 			defer r.Body.Close()
 		}
 
-		logRequest := buildUpstreamRequest(r, upstreamLogProviderBase, upstreamLogsEndpoint)
+		logRequest := requests.buildUpstreamRequest(r, upstreamLogProviderBase, upstreamLogsEndpoint)
 		if logRequest.Body != nil {
 			defer logRequest.Body.Close()
 		}
